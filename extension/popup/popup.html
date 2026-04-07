@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <title>InsightX</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <div id="screen-login" class="screen hidden">
+    <div class="login-brand">
+      <div class="brand-icon">🎯</div>
+      <h2>InsightX</h2>
+      <p>Creator Analytics Platform</p>
+    </div>
+    <div id="login-error" class="error-msg"></div>
+    <form id="form-login">
+      <input type="email" id="login-email" placeholder="Email" required>
+      <input type="password" id="login-password" placeholder="Password" required>
+      <button type="submit" id="btn-login">Login</button>
+    </form>
+    <div class="divider">Don't have an account?</div>
+    <button id="nav-to-signup" class="secondary-btn">Sign Up</button>
+  </div>
+
+  <!-- SIGNUP SCREEN -->
+  <div id="screen-signup" class="screen hidden">
+    <div class="login-brand">
+      <div class="brand-icon">🎯</div>
+      <h2>InsightX</h2>
+      <p>Create Your Account</p>
+    </div>
+    <div id="signup-error" class="error-msg"></div>
+    <form id="form-signup">
+      <input type="email" id="signup-email" placeholder="Email" required>
+      <input type="password" id="signup-password" placeholder="Password (min 6 chars)" required>
+      <input type="password" id="signup-confirm" placeholder="Confirm Password" required>
+      <button type="submit" id="btn-signup">Create Account</button>
+    </form>
+    <div class="divider">Already have an account?</div>
+    <button id="nav-to-login" class="secondary-btn">Back to Login</button>
+  </div>
+
+  <!-- LOADING OVERLAY -->
+  <div id="loading-overlay" class="hidden">
+    <div class="spinner"></div>
+    <p>Analysing comments…</p>
+  </div>
+
+  <!-- ANALYSIS SCREEN -->
+  <div id="screen-analysis" class="screen hidden">
+
+    <!-- TOP HEADER -->
+    <div class="top-header">
+      <div class="video-info">
+        <h3 id="video-title">No Video Detected</h3>
+        <div id="channel-name" class="channel-name">Please open a YouTube video.</div>
+        <div id="subscriber-count" class="subscriber-count"></div>
+        <div class="stats-row">
+          <span id="view-count-display" class="stat-chip">👁 — views</span>
+          <span id="comment-count-display" class="stat-chip">💬 — comments</span>
+        </div>
+      </div>
+      <div class="header-controls">
+        <!-- Dark / Light Mode Toggle -->
+        <button id="btn-theme" class="icon-btn" title="Toggle dark mode">🌙</button>
+        <!-- Profile -->
+        <div class="profile-area">
+          <button id="btn-profile" class="profile-btn" title="Account">
+            <div class="profile-avatar" id="profile-avatar">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="default-avatar-icon">
+                <circle cx="12" cy="8" r="4" fill="currentColor"/>
+                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </button>
+          <div id="profile-dropdown" class="profile-dropdown hidden">
+            <div class="dropdown-email" id="dropdown-email">Signed in</div>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" id="dd-dashboard">
+              <span class="dd-icon">📊</span> Your Dashboard
+            </button>
+            <button class="dropdown-item" id="dd-logout">
+              <span class="dd-icon">🚪</span> Logout / Switch Account
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEPTH SELECTOR -->
+    <div class="depth-row">
+      <label class="depth-label">Depth:</label>
+      <div class="depth-pills">
+        <button class="pill-btn" data-value="100">Quick</button>
+        <button class="pill-btn active" data-value="500">Medium</button>
+        <button class="pill-btn" data-value="1000">Deep</button>
+      </div>
+      <input type="hidden" id="analysis-depth" value="500">
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="tab-overview">Overview</button>
+      <button class="tab-btn" data-tab="tab-insights">AI Insights</button>
+      <button class="tab-btn" data-tab="tab-details">Details</button>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- TAB: OVERVIEW                                     -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div id="tab-overview" class="tab-content active">
+
+      <!-- Executive Summary (2-3 paragraphs) -->
+      <div class="section-card summary-card">
+        <div class="card-label">📋 Executive Summary</div>
+        <div id="exec-summary-paras" class="summary-paras">
+          <p class="summary-para muted">Run an analysis to see a summary of the video's comments.</p>
+        </div>
+      </div>
+
+      <!-- Audience Reaction (how they react, no keyword list) -->
+      <div class="section-card reaction-card">
+        <div class="card-label">📢 Audience Reaction</div>
+        <p id="audience-reaction-text" class="reaction-text muted">How viewers are reacting will appear here.</p>
+      </div>
+
+      <!-- Sentiment bars -->
+      <div class="section-card">
+        <h4>Audience Sentiment</h4>
+        <div class="progress-bar-container">
+          <div class="label-row"><span>😊 Positive</span><span id="pct-pos">0%</span></div>
+          <div class="progress-track"><div id="bar-pos" class="progress-fill pos"></div></div>
+        </div>
+        <div class="progress-bar-container">
+          <div class="label-row"><span>😐 Neutral</span><span id="pct-neu">0%</span></div>
+          <div class="progress-track"><div id="bar-neu" class="progress-fill neu"></div></div>
+        </div>
+        <div class="progress-bar-container">
+          <div class="label-row"><span>😞 Negative</span><span id="pct-neg">0%</span></div>
+          <div class="progress-track"><div id="bar-neg" class="progress-fill neg"></div></div>
+        </div>
+      </div>
+
+      <!-- 3 Clickable Cards -->
+      <div class="categories-grid">
+        <div class="cat-card" id="card-praise" data-type="praise">
+          <div class="cat-icon">👏</div>
+          <div class="cat-label">Praises</div>
+          <div class="cat-count" id="cat-praise">0</div>
+          <div class="cat-arrow">›</div>
+        </div>
+        <div class="cat-card" id="card-questions" data-type="questions">
+          <div class="cat-icon">❓</div>
+          <div class="cat-label">Questions</div>
+          <div class="cat-count" id="cat-questions">0</div>
+          <div class="cat-arrow">›</div>
+        </div>
+        <div class="cat-card full-width" id="card-concerns" data-type="concerns">
+          <div class="cat-icon">⚠️</div>
+          <div class="cat-label">Concerns</div>
+          <div class="cat-count" id="cat-concerns">0</div>
+          <div class="cat-arrow">›</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- TAB: AI INSIGHTS                                  -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div id="tab-insights" class="tab-content hidden">
+
+      <!-- Card 1: AI Headline -->
+      <div class="insight-card headline-card">
+        <div class="insight-header">
+          <span class="insight-icon">🤖</span>
+          <span class="insight-title">AI Summary</span>
+        </div>
+        <p id="ai-headline" class="insight-body muted">Run an analysis to see AI-generated insights.</p>
+      </div>
+
+      <!-- Card 2: Main Discussion Themes -->
+      <div class="insight-card">
+        <div class="insight-header">
+          <span class="insight-icon">💬</span>
+          <span class="insight-title">Main Discussion Themes</span>
+        </div>
+        <div id="themes-list" class="insight-body">
+          <div class="muted-sm">No data yet.</div>
+        </div>
+      </div>
+
+      <!-- Card 3: Audience Intent -->
+      <div class="insight-card">
+        <div class="insight-header">
+          <span class="insight-icon">🎯</span>
+          <span class="insight-title">Audience Intent</span>
+        </div>
+        <div id="intent-list" class="insight-body">
+          <div class="muted-sm">No data yet.</div>
+        </div>
+      </div>
+
+      <!-- Card 4: Emotion Mix -->
+      <div class="insight-card">
+        <div class="insight-header">
+          <span class="insight-icon">🎭</span>
+          <span class="insight-title">Dominant Emotions</span>
+        </div>
+        <div id="emotion-list" class="insight-body emotion-grid">
+          <div class="muted-sm">No data yet.</div>
+        </div>
+      </div>
+
+      <!-- Card 5: Creator Actions -->
+      <div class="insight-card action-card">
+        <div class="insight-header">
+          <span class="insight-icon">💡</span>
+          <span class="insight-title">What You Should Do</span>
+        </div>
+        <div id="creator-actions-list" class="insight-body">
+          <div class="muted-sm">No data yet.</div>
+        </div>
+      </div>
+
+      <!-- Card 6: Content Gaps -->
+      <div class="insight-card gap-card">
+        <div class="insight-header">
+          <span class="insight-icon">🔍</span>
+          <span class="insight-title">Content Gaps / What's Missing</span>
+        </div>
+        <div id="gaps-list" class="insight-body">
+          <div class="muted-sm">No data yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- TAB: DETAILS                                      -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div id="tab-details" class="tab-content hidden">
+
+      <!-- Top Stats Row -->
+      <div class="details-stats-row">
+        <div class="stat-box">
+          <div class="stat-number" id="det-total">—</div>
+          <div class="stat-label">Analyzed</div>
+        </div>
+        <div class="stat-box pos-box">
+          <div class="stat-number pos-text" id="det-pos">—</div>
+          <div class="stat-label">Positive</div>
+        </div>
+        <div class="stat-box neg-box">
+          <div class="stat-number neg-text" id="det-neg">—</div>
+          <div class="stat-label">Negative</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number" id="det-unique">—</div>
+          <div class="stat-label">Comments</div>
+        </div>
+      </div>
+
+      <!-- Comment Type Breakdown -->
+      <div class="section-card">
+        <h4>💬 Comment Breakdown</h4>
+        <div id="breakdown-list" class="breakdown-grid">
+          <div class="muted-sm">No data yet.</div>
+        </div>
+      </div>
+
+      <!-- Top Keywords -->
+      <div class="section-card">
+        <h4>🔑 Top Keywords</h4>
+        <div id="keywords-list" class="flex-tags">
+          <span class="muted-sm">No data yet.</span>
+        </div>
+      </div>
+
+      <!-- Common Phrases -->
+      <div class="section-card">
+        <h4>🗨️ Common Phrases</h4>
+        <div id="phrases-list" class="flex-tags">
+          <span class="muted-sm">No data yet.</span>
+        </div>
+      </div>
+
+      <!-- Sample Comments with Filter -->
+      <div class="section-card">
+        <div class="sample-header">
+          <h4>💬 Sample Comments</h4>
+          <div class="filter-bar">
+            <button class="filter-pill active" data-filter="all">All</button>
+            <button class="filter-pill" data-filter="praise">Praise</button>
+            <button class="filter-pill" data-filter="questions">Questions</button>
+            <button class="filter-pill" data-filter="concerns">Concerns</button>
+          </div>
+        </div>
+        <div id="sample-comments-list">
+          <div class="muted-sm">No data yet.</div>
+        </div>
+      </div>
+
+      <!-- Most Liked Comments -->
+      <div class="section-card">
+        <h4>⭐ Most Liked Comments</h4>
+        <div id="liked-comments-list">
+          <div class="muted-sm">No data yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM CONTROLS -->
+    <div class="bottom-controls">
+      <button id="btn-analyze" class="primary-btn">🔍 Analyse Video</button>
+      <button id="btn-dashboard" class="secondary-btn">📊 View Full Dashboard</button>
+    </div>
+  </div>
+
+  <!-- COMMENT MODAL -->
+  <div id="comment-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span id="modal-title">Comments</span>
+        <button id="modal-close" class="modal-close-btn">✕</button>
+      </div>
+      <div id="modal-body" class="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
