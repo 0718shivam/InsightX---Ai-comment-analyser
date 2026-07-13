@@ -52,7 +52,7 @@ export default function LoginPage() {
 
     try {
       if (isSignup) {
-         const res = await fetch("http://localhost:8000/auth/signup", {
+         const res = await fetch("https://insightx-ai-comment-analyser.onrender.com/auth/signup", {
            method: "POST", headers:{"Content-Type": "application/json"},
            body: JSON.stringify({email, password})
          });
@@ -61,7 +61,7 @@ export default function LoginPage() {
          localStorage.setItem('insightx_token', data.token);
          localStorage.setItem('insightx_email', email);
       } else {
-         const res = await fetch("http://localhost:8000/auth/login", {
+         const res = await fetch("https://insightx-ai-comment-analyser.onrender.com/auth/login", {
            method: "POST", headers:{"Content-Type": "application/json"},
            body: JSON.stringify({email, password})
          });

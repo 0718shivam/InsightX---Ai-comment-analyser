@@ -12,7 +12,7 @@ DATABASE_PATH = os.path.join(os.path.dirname(__file__), "insightx.db")
 CORS_ORIGINS = [
     "http://localhost:5173", # Vite Dev Server
     "http://127.0.0.1:5173",
-    "http://localhost:8000",
+    "https://insightx-ai-comment-analyser.onrender.com",
     "chrome-extension://*",
     "*",
 ]

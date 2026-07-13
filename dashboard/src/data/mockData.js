@@ -3,7 +3,7 @@
  * Handles real API calls to the backend and provides structure for analysis data.
  */
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = "https://insightx-ai-comment-analyser.onrender.com";
 
 // --- API FETCHERS ---
 
